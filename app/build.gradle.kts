@@ -39,6 +39,10 @@ android {
 }
 
 dependencies {
+//    Navigation
+    implementation("androidx.navigation:navigation-fragment-ktx:2.6.0")
+    implementation("androidx.navigation:navigation-ui-ktx:2.6.0")
+
 //    Camera
     var camerax_version = "1.2.2"
     implementation("androidx.camera:camera-core:${camerax_version}")
