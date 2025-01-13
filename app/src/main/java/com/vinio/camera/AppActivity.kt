@@ -1,11 +1,8 @@
 package com.vinio.camera
 
-import android.content.Context
-import android.os.Build
-import android.os.Bundle
 import android.Manifest
-import android.app.Activity
 import android.content.pm.PackageManager
+import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -25,14 +22,14 @@ class AppActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        if (checkPermissions()){
+        if (checkPermissions()) {
             Toast.makeText(this, "Permissions already exist", Toast.LENGTH_SHORT).show()
         } else {
             requestPermissions()
         }
     }
 
-//    Проверка наличия разрешений
+    //    Проверка наличия разрешений
     fun checkPermissions(): Boolean {
         val cameraPermission = ContextCompat.checkSelfPermission(
             this,
@@ -45,7 +42,7 @@ class AppActivity : AppCompatActivity() {
         return cameraPermission && audioPermission
     }
 
-//    Запрос разрешений
+    //    Запрос разрешений
     fun requestPermissions() {
         val permissions = arrayOf(
             Manifest.permission.CAMERA,
@@ -54,27 +51,33 @@ class AppActivity : AppCompatActivity() {
 
         requestPermissionsLauncher.launch(permissions)
     }
+
     private val requestPermissionsLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             run {
                 val cameraGranted = permissions[Manifest.permission.CAMERA] ?: false
                 val audioGranted = permissions[Manifest.permission.RECORD_AUDIO] ?: false
 
-                if (cameraGranted && audioGranted) {
-                    // Все разрешения предоставлены
+                if (!cameraGranted) {
                     Toast.makeText(
                         this,
-                        "Permissions granted. Starting camera...",
+                        "Нет доступа к камере. Завершаемся!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish() // Завершаем приложение
+                } else if (!audioGranted) {
+                    Toast.makeText(
+                        this,
+                        "Немое кино..",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Все разрешения предоставлены",
                         Toast.LENGTH_SHORT
                     ).show()
                     // startCamera() // Например, запустить камеру
-                } else {
-                    // Одно или оба разрешения не предоставлены
-                    Toast.makeText(
-                        this,
-                        "Permissions are required to use the camera.",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
             }
         }

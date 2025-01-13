@@ -48,7 +48,7 @@ class PhotoFragment : Fragment() {
         Log.d("CAMERA_APP", "Fragment photo onViewCreated")
 
         cameraNavigationBinding.buttonPhoto.setOnClickListener {
-            view.findNavController().navigate(R.id.action_video_to_photo)
+//            view.findNavController().navigate(R.id.action_video_to_photo)
         }
 
         cameraNavigationBinding.buttonVideo.setOnClickListener {

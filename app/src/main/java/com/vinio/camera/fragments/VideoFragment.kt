@@ -51,7 +51,7 @@ class VideoFragment : Fragment() {
         }
 
         cameraNavigationBinding.buttonVideo.setOnClickListener {
-            view.findNavController().navigate(R.id.action_photo_to_video)
+//            view.findNavController().navigate(R.id.action_photo_to_video)
         }
 
         cameraActionsBinding.buttonGallery.setOnClickListener {
