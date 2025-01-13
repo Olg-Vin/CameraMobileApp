@@ -2,6 +2,7 @@ package com.vinio.camera
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -39,14 +40,19 @@ class AppActivity : AppCompatActivity() {
             this,
             Manifest.permission.RECORD_AUDIO
         ) == PackageManager.PERMISSION_GRANTED
-        return cameraPermission && audioPermission
+        val storagePermission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+        return cameraPermission && audioPermission && storagePermission
     }
 
     //    Запрос разрешений
     fun requestPermissions() {
         val permissions = arrayOf(
             Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
 
         requestPermissionsLauncher.launch(permissions)
@@ -57,6 +63,11 @@ class AppActivity : AppCompatActivity() {
             run {
                 val cameraGranted = permissions[Manifest.permission.CAMERA] ?: false
                 val audioGranted = permissions[Manifest.permission.RECORD_AUDIO] ?: false
+                val storageGranted = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+                    permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] ?: false
+                } else {
+                    true
+                }
 
                 if (!cameraGranted) {
                     Toast.makeText(
@@ -69,6 +80,12 @@ class AppActivity : AppCompatActivity() {
                     Toast.makeText(
                         this,
                         "Немое кино..",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else if (!storageGranted) {
+                    Toast.makeText(
+                        this,
+                        "Нет доступа к хранилищу, нельзя сохранить фото",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
