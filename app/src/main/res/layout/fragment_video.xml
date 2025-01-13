@@ -11,8 +11,12 @@
         android:layout_height="match_parent" />
 
     <!-- Кнопки перехода между экранами фото и видео -->
-    <include layout="@layout/camera_navigation"/>
+    <include
+        android:id="@+id/navigation_buttons"
+        layout="@layout/camera_navigation"/>
     <!-- Кнопки действий-->
-    <include layout="@layout/camera_actions"/>
+    <include
+        android:id="@+id/actions_buttons"
+        layout="@layout/camera_actions"/>
 
 </FrameLayout>

@@ -40,8 +40,10 @@ android {
 
 dependencies {
 //    Navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:2.6.0")
-    implementation("androidx.navigation:navigation-ui-ktx:2.6.0")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.5")
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:2.8.5")
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 
 //    Camera
     var camerax_version = "1.2.2"
