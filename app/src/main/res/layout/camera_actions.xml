@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <Button
+        android:id="@+id/buttonGallery"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:text="Галерея"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/buttonTake"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_weight="1"
+        android:text="Хоба"
+        android:textSize="40sp" />
+
+    <Button
+        android:id="@+id/buttonChange"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_weight="1"
+        android:text="Поворот камеры"
+        android:textSize="14sp" />
+
+</LinearLayout>

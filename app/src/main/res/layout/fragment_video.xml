@@ -5,5 +5,14 @@
     android:layout_height="match_parent"
     tools:context=".fragments.VideoFragment">
 
+    <androidx.camera.view.PreviewView
+        android:id="@+id/viewFinder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Кнопки перехода между экранами фото и видео -->
+    <include layout="@layout/camera_navigation"/>
+    <!-- Кнопки действий-->
+    <include layout="@layout/camera_actions"/>
 
 </FrameLayout>
