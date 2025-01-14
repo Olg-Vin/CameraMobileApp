@@ -31,6 +31,9 @@ class GalleryFragment : Fragment() {
         val layoutManager = GridLayoutManager(requireContext(), 3) // 3 колонки
         binding.recyclerView.layoutManager = layoutManager
         loadMediaFiles()
+        binding.backButton.setOnClickListener {
+            findNavController().navigate(R.id.action_gallery_to_photo)
+        }
         return binding.root
     }
 

@@ -1,6 +1,5 @@
 package com.vinio.camera.fragments
 
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -9,8 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.bumptech.glide.Glide
-import com.vinio.camera.R
 import com.vinio.camera.databinding.FragmentFullscreenMediaBinding
 import java.io.File
 
@@ -19,8 +16,6 @@ class FullscreenMediaFragment : Fragment() {
     private var _binding: FragmentFullscreenMediaBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var mediaPlayer: MediaPlayer
-    private var videoFile: File? = null
     private lateinit var mediaFile: File
 
     override fun onCreateView(
@@ -51,8 +46,35 @@ class FullscreenMediaFragment : Fragment() {
         } else {
             binding.fullscreenImageView.visibility = View.GONE
             binding.fullscreenVideoView.visibility = View.VISIBLE
+
+            // Устанавливаем видео и запускаем
             binding.fullscreenVideoView.setVideoURI(uri)
             binding.fullscreenVideoView.start()
+
+            // Кнопка паузы / воспроизведения
+            binding.playPauseButton.setOnClickListener {
+                if (binding.fullscreenVideoView.isPlaying) {
+                    binding.fullscreenVideoView.pause()
+                    binding.playPauseButton.text = "Play"
+                } else {
+                    binding.fullscreenVideoView.start()
+                    binding.playPauseButton.text = "Pause"
+                }
+            }
+
+            // Кнопка перемотки вперед
+            binding.fastForwardButton.setOnClickListener {
+                val currentPosition = binding.fullscreenVideoView.currentPosition
+                val newPosition = (currentPosition + 10000).coerceAtMost(binding.fullscreenVideoView.duration)
+                binding.fullscreenVideoView.seekTo(newPosition)
+            }
+
+            // Кнопка перемотки назад
+            binding.rewindButton.setOnClickListener {
+                val currentPosition = binding.fullscreenVideoView.currentPosition
+                val newPosition = (currentPosition - 10000).coerceAtLeast(0)
+                binding.fullscreenVideoView.seekTo(newPosition)
+            }
         }
 
         // Обработчик для кнопки удаления
@@ -81,4 +103,3 @@ class FullscreenMediaFragment : Fragment() {
         }
     }
 }
-
