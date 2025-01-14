@@ -75,7 +75,7 @@ class PhotoFragment : Fragment() {
         }
 
         cameraActionsBinding.buttonGallery.setOnClickListener {
-            // Ваш код для кнопки "Галерея"
+            view.findNavController().navigate(R.id.action_photo_to_gallery)
         }
 
         cameraActionsBinding.buttonTake.setOnClickListener {
@@ -116,7 +116,7 @@ class PhotoFragment : Fragment() {
             ContextCompat.getMainExecutor(requireContext()),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    Log.d("CameraX", "Фото сохранено:")
+                    Log.d("CameraX", "Фото сохранено: ${outputFileResults.savedUri}")
                 }
 
                 override fun onError(exception: ImageCaptureException) {

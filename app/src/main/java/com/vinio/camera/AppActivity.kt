@@ -44,7 +44,12 @@ class AppActivity : AppCompatActivity() {
             this,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED
-        return cameraPermission && audioPermission && storagePermission
+
+        val storageReadPermission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+        return cameraPermission && audioPermission && storagePermission && storageReadPermission
     }
 
     //    Запрос разрешений
