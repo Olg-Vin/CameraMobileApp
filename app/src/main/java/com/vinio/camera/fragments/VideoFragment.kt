@@ -23,6 +23,8 @@ import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
@@ -95,9 +97,9 @@ class VideoFragment : Fragment() {
 //            view.findNavController().navigate(R.id.action_photo_to_video)
         }
 
-        cameraActionsBinding.buttonGallery.setOnClickListener {
-            // Ваш код для кнопки "Галерея"
-        }
+//        cameraActionsBinding.buttonGallery.setOnClickListener {
+//            // Ваш код для кнопки "Галерея"
+//        }
 
         cameraActionsBinding.buttonTake.setOnClickListener {
             captureVideo()
@@ -157,7 +159,6 @@ class VideoFragment : Fragment() {
                     is VideoRecordEvent.Start -> {
                         cameraActionsBinding.buttonTake.apply {
                             setBackgroundColor(ContextCompat.getColor(context, R.color.black))
-                            text = "Не хоба"
                             isEnabled = true
                         }
                         startTimer()
@@ -176,7 +177,6 @@ class VideoFragment : Fragment() {
                         }
                         cameraActionsBinding.buttonTake.apply {
                             setBackgroundColor(ContextCompat.getColor(context, R.color.main))
-                            text = "ХОБА"
                             isEnabled = true
                         }
                     }
@@ -251,6 +251,10 @@ class VideoFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        cameraNavigationBinding.buttonVideo.apply {
+            textSize = 28f
+            setTextColor(Color.White.toArgb())
+        }
         Log.d("CAMERA_APP", "Fragment video onResume")
     }
 

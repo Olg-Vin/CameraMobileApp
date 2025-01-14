@@ -10,13 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="PHOTO"
-        android:textSize="50sp"/>
-
     <!-- Кнопки перехода между экранами фото и видео -->
     <include
         android:id="@+id/navigation_buttons"

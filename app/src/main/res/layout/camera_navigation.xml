@@ -8,22 +8,26 @@
     android:layout_gravity="bottom"
     android:layout_marginBottom="130dp">
 
-    <Button
+    <TextView
         android:id="@+id/buttonPhoto"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_weight="1"
+        android:gravity="center"
         android:text="Фото"
-        android:textSize="22sp" />
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#000000" />
 
-    <Button
+    <TextView
         android:id="@+id/buttonVideo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_weight="1"
+        android:gravity="center"
         android:text="Видео"
-        android:textSize="22sp" />
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#000000" />
 
 </LinearLayout>
