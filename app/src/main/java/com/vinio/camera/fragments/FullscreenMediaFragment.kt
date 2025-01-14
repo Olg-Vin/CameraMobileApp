@@ -43,13 +43,16 @@ class FullscreenMediaFragment : Fragment() {
             binding.fullscreenImageView.visibility = View.VISIBLE
             binding.fullscreenVideoView.visibility = View.GONE
             binding.fullscreenImageView.setImageURI(uri)
+            binding.playPauseButton.visibility = View.GONE
+            binding.fastForwardButton.visibility = View.GONE
+            binding.rewindButton.visibility = View.GONE
         } else {
             binding.fullscreenImageView.visibility = View.GONE
             binding.fullscreenVideoView.visibility = View.VISIBLE
 
             // Устанавливаем видео и запускаем
             binding.fullscreenVideoView.setVideoURI(uri)
-            binding.fullscreenVideoView.start()
+//            binding.fullscreenVideoView.start()
 
             // Кнопка паузы / воспроизведения
             binding.playPauseButton.setOnClickListener {

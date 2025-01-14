@@ -37,16 +37,16 @@
             android:text="Play" />
 
         <Button
-            android:id="@+id/fastForwardButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fast Forward" />
-
-        <Button
             android:id="@+id/rewindButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rewind" />
+            android:text="-10 сек" />
+
+        <Button
+            android:id="@+id/fastForwardButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+10 сек" />
     </LinearLayout>
 
 </FrameLayout>
