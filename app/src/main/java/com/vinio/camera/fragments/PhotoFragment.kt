@@ -46,7 +46,6 @@ class PhotoFragment : Fragment() {
 
 
     private var imageCapture: ImageCapture? = null
-    private lateinit var cameraExecutor: ExecutorService
     var isBackCamera: Boolean = true
 
     override fun onCreateView(
@@ -56,7 +55,6 @@ class PhotoFragment : Fragment() {
         _binding = FragmentPhotoBinding.inflate(inflater, container, false)
         _cameraNavigationBinding = CameraNavigationBinding.bind(binding.root.findViewById(R.id.navigation_buttons))
         _cameraActionsBinding = CameraActionsBinding.bind(binding.root.findViewById(R.id.actions_buttons))
-        cameraExecutor = Executors.newSingleThreadExecutor()
 
         startCamera()
 
@@ -104,6 +102,7 @@ class PhotoFragment : Fragment() {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
             }
         }
+
 
         val outputOptions = ImageCapture.OutputFileOptions
             .Builder(requireContext().contentResolver,
@@ -177,7 +176,6 @@ class PhotoFragment : Fragment() {
         _binding = null
         _cameraNavigationBinding = null
         _cameraActionsBinding = null
-        cameraExecutor.shutdown()
         Log.d("CAMERA_APP", "Fragment photo onDestroyView")
     }
 }

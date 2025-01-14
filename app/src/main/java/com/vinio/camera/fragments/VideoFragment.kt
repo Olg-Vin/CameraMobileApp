@@ -1,10 +1,28 @@
 package com.vinio.camera.fragments
 
+import android.Manifest
+import android.content.ContentValues
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.MediaStoreOutputOptions
+import androidx.camera.video.Quality
+import androidx.camera.video.QualitySelector
+import androidx.camera.video.Recorder
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoCapture
+import androidx.camera.video.VideoRecordEvent
+import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.vinio.camera.R
@@ -29,14 +47,21 @@ class VideoFragment : Fragment() {
         get() = (_cameraActionsBinding
             ?: RuntimeException("[EXCEPTION] FragmentPhotoBinding is null")) as CameraActionsBinding
 
+    private var videoCapture: VideoCapture<Recorder>? = null
+    private var isBackCamera: Boolean = true
+    private var recording: Recording? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentVideoBinding.inflate(inflater, container, false)
-        _cameraNavigationBinding = CameraNavigationBinding.bind(binding.root.findViewById(R.id.navigation_buttons))
-        _cameraActionsBinding = CameraActionsBinding.bind(binding.root.findViewById(R.id.actions_buttons))
+        _cameraNavigationBinding =
+            CameraNavigationBinding.bind(binding.root.findViewById(R.id.navigation_buttons))
+        _cameraActionsBinding =
+            CameraActionsBinding.bind(binding.root.findViewById(R.id.actions_buttons))
+
+        startCamera()
 
         Log.d("CAMERA_APP", "Fragment video onCreateView")
         return binding.root
@@ -59,13 +84,126 @@ class VideoFragment : Fragment() {
         }
 
         cameraActionsBinding.buttonTake.setOnClickListener {
-            // Ваш код для кнопки "Хоба"
+            captureVideo()
         }
 
         cameraActionsBinding.buttonChange.setOnClickListener {
-            // Ваш код для кнопки "Поворот камеры"
+            isBackCamera = !isBackCamera
+            startCamera()
         }
 
+    }
+
+    private fun captureVideo() {
+        val context: Context = requireContext()
+        val videoCapture = this.videoCapture ?: return
+
+        cameraActionsBinding.buttonTake.isEnabled = false
+
+        val curRecording = recording
+        if (curRecording != null) {
+            // Stop the current recording session.
+            curRecording.stop()
+            recording = null
+            Log.d("CameraX", "Останова")
+            return
+        }
+
+        // create and start a new recording session
+        val fileName = "Video_${System.currentTimeMillis()}.mp4"
+        Log.d("CameraX", "Создание fileName: $fileName")
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/CameraX-Video")
+            }
+        }
+
+        val mediaStoreOutputOptions = MediaStoreOutputOptions
+            .Builder(context.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+            .setContentValues(contentValues)
+            .build()
+
+        recording = videoCapture.output
+            .prepareRecording(context, mediaStoreOutputOptions)
+            .apply {
+                if (PermissionChecker.checkSelfPermission(
+                        context,
+                        Manifest.permission.RECORD_AUDIO
+                    ) == PermissionChecker.PERMISSION_GRANTED
+                ) {
+                    withAudioEnabled()
+                }
+            }
+            .start(ContextCompat.getMainExecutor(context)) { recordEvent ->
+                when (recordEvent) {
+                    is VideoRecordEvent.Start -> {
+                        cameraActionsBinding.buttonTake.apply {
+                            setBackgroundColor(ContextCompat.getColor(context, R.color.black))
+                            text = "не хоба"
+                            isEnabled = true
+                        }
+                    }
+
+                    is VideoRecordEvent.Finalize -> {
+                        if (!recordEvent.hasError()) {
+                            val msg = "Video capture succeeded: " +
+                                    "${recordEvent.outputResults.outputUri}"
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT)
+                                .show()
+                            Log.d("CameraX", msg)
+                        } else {
+                            recording?.close()
+                            recording = null
+                            Log.e(
+                                "CameraX", "Video capture ends with error: " +
+                                        "${recordEvent.error}"
+                            )
+                        }
+                        cameraActionsBinding.buttonTake.apply {
+                            setBackgroundColor(ContextCompat.getColor(context, R.color.main))
+                            text = "ХОБА"
+                            isEnabled = true
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+
+        cameraProviderFuture.addListener({
+            val cameraProvider = cameraProviderFuture.get()
+            val preview = Preview.Builder()
+                .build()
+                .also {
+                    it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+                }
+
+            val recorder = Recorder.Builder()
+                .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
+                .build()
+            videoCapture = VideoCapture.withOutput(recorder)
+
+            val cameraSelector =
+                if (isBackCamera) {
+                    CameraSelector.DEFAULT_BACK_CAMERA
+                } else {
+                    CameraSelector.DEFAULT_FRONT_CAMERA
+                }
+
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    this, cameraSelector, preview, videoCapture)
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }, ContextCompat.getMainExecutor(requireContext()))
     }
 
     override fun onStart() {
@@ -80,6 +218,9 @@ class VideoFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
+        _binding = null
+        _cameraNavigationBinding = null
+        _cameraActionsBinding = null
         Log.d("CAMERA_APP", "Fragment video onStop")
     }
 
