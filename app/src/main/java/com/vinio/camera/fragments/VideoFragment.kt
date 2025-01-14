@@ -31,6 +31,12 @@ import com.vinio.camera.R
 import com.vinio.camera.databinding.CameraActionsBinding
 import com.vinio.camera.databinding.CameraNavigationBinding
 import com.vinio.camera.databinding.FragmentVideoBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class VideoFragment : Fragment() {
 
@@ -57,8 +63,8 @@ class VideoFragment : Fragment() {
 
 //    Timer
     private var startTime: Long = 0
-    private var handler = Handler(Looper.getMainLooper())
-    private var runnable: Runnable? = null
+    private var timerJob: Job? = null
+
 
 
     override fun onCreateView(
@@ -158,8 +164,7 @@ class VideoFragment : Fragment() {
                     }
 
                     is VideoRecordEvent.Finalize -> {
-                        handler.removeCallbacks(runnable!!)  // Останавливаем таймер
-                        binding.timerTextView.text = "00:00"
+                        stopTimer()
                         if (!recordEvent.hasError()) {
                             val msg = "Video capture succeeded: ${recordEvent.outputResults.outputUri}"
                             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
@@ -217,8 +222,8 @@ class VideoFragment : Fragment() {
     private fun startTimer() {
         startTime = System.currentTimeMillis()
 
-        runnable = object : Runnable {
-            override fun run() {
+        timerJob = CoroutineScope(Dispatchers.Main).launch {
+            while (isActive) {
                 val elapsedTime = System.currentTimeMillis() - startTime
                 val seconds = (elapsedTime / 1000).toInt()
                 val minutes = seconds / 60
@@ -227,11 +232,15 @@ class VideoFragment : Fragment() {
                 val timeText = String.format("%02d:%02d", minutes, secondsFormatted)
                 binding.timerTextView.text = timeText
 
-                handler.postDelayed(this, 1000)
+                delay(1000)  // Задержка на 1 секунду
             }
         }
+    }
 
-        handler.post(runnable!!)
+    private fun stopTimer() {
+        val timeText = "00:00"
+        binding.timerTextView.text = timeText
+        timerJob?.cancel()  // Останавливаем корутину
     }
 
 
