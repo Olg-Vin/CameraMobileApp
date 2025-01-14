@@ -3,6 +3,7 @@ package com.vinio.camera.fragments
 import android.Manifest
 import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -28,7 +29,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.vinio.camera.R
 import com.vinio.camera.databinding.CameraActionsBinding
 import com.vinio.camera.databinding.CameraNavigationBinding
@@ -39,6 +43,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class VideoFragment : Fragment() {
 
@@ -158,7 +163,7 @@ class VideoFragment : Fragment() {
                 when (recordEvent) {
                     is VideoRecordEvent.Start -> {
                         cameraActionsBinding.buttonTake.apply {
-                            setBackgroundColor(ContextCompat.getColor(context, R.color.black))
+                            setImageResource(R.drawable.baseline_circle_24_video)
                             isEnabled = true
                         }
                         startTimer()
@@ -168,6 +173,9 @@ class VideoFragment : Fragment() {
                         stopTimer()
                         if (!recordEvent.hasError()) {
                             val msg = "Video capture succeeded: ${recordEvent.outputResults.outputUri}"
+                            Glide.with(requireContext())
+                                .load(recordEvent.outputResults.outputUri)
+                                .into(cameraActionsBinding.galleryPreview)
                             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             Log.d("CameraX", msg)
                         } else {
@@ -176,7 +184,7 @@ class VideoFragment : Fragment() {
                             Log.e("CameraX", "Video capture ends with error: ${recordEvent.error}")
                         }
                         cameraActionsBinding.buttonTake.apply {
-                            setBackgroundColor(ContextCompat.getColor(context, R.color.main))
+                            setImageResource(R.drawable.baseline_circle_24)
                             isEnabled = true
                         }
                     }
@@ -249,8 +257,55 @@ class VideoFragment : Fragment() {
         Log.d("CAMERA_APP", "Fragment video onStart")
     }
 
+    private suspend fun getLastMediaUri(): Uri? {
+        return withContext(Dispatchers.IO) {
+            val projection = arrayOf(
+                MediaStore.Files.FileColumns._ID,
+                MediaStore.Files.FileColumns.DATE_ADDED
+            )
+            val sortOrder = "${MediaStore.Files.FileColumns.DATE_ADDED} DESC"
+            val cursor = requireContext().contentResolver.query(
+                MediaStore.Files.getContentUri("external"),
+                projection,
+                null,
+                null,
+                sortOrder
+            )
+            cursor?.use {
+                if (it.moveToFirst()) {
+                    val idIndex = it.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
+                    val id = it.getLong(idIndex)
+                    return@withContext Uri.withAppendedPath(MediaStore.Files.getContentUri("external"), id.toString())
+                }
+            }
+            null
+        }
+    }
+
+    private fun setupGalleryButton() {
+        val previewImage = cameraActionsBinding.galleryPreview
+
+        lifecycleScope.launchWhenStarted {
+            val lastMediaUri = getLastMediaUri()
+            if (lastMediaUri != null) {
+                Glide.with(requireContext())
+                    .load(lastMediaUri)
+                    .into(previewImage)
+            } else {
+                previewImage.setImageResource(R.drawable.baseline_add_photo_alternate_24)
+            }
+        }
+
+        previewImage.setOnClickListener {
+            // Обработчик клика по кнопке Галерея
+            findNavController().navigate(R.id.action_videoFragment_to_galleryFragment)
+            Toast.makeText(requireContext(), "Открываем Галерею!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
+        setupGalleryButton()
         cameraNavigationBinding.buttonVideo.apply {
             textSize = 28f
             setTextColor(Color.White.toArgb())
