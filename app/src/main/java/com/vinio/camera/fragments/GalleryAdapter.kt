@@ -1,7 +1,6 @@
 package com.vinio.camera.fragments
 
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,24 +30,21 @@ class GalleryAdapter(
 
     inner class GalleryViewHolder(private val binding: GalleryItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
-        init {
-            binding.root.setOnClickListener {
-                val file = mediaFiles[adapterPosition]
-                onMediaClick(file)
-            }
-        }
-
         fun bind(file: File) {
             val uri = Uri.fromFile(file)
             Glide.with(binding.root.context)
                 .load(uri)
                 .into(binding.thumbnail)
 
-            if (uri.lastPathSegment?.startsWith("Video") == true){
+            if (uri.lastPathSegment?.startsWith("Video") == true) {
                 binding.videoIcon.visibility = View.VISIBLE
             } else {
                 binding.videoIcon.visibility = View.GONE
+            }
+
+            binding.root.setOnClickListener {
+//                val file = mediaFiles[adapterPosition]
+                onMediaClick(file)
             }
         }
     }

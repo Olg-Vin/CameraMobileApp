@@ -36,6 +36,15 @@
         <action
             android:id="@+id/action_gallery_to_photo"
             app:destination="@id/photoFragment" />
+        <action
+            android:id="@+id/action_gallery_to_fullScreen"
+            app:destination="@id/fullScreenFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fullScreenFragment"
+        android:name="com.vinio.camera.fragments.FullscreenMediaFragment"
+        tools:layout="@layout/fragment_fullscreen_media">
     </fragment>
 
 
