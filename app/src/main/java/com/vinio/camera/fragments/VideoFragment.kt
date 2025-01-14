@@ -5,6 +5,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,6 +34,7 @@ import com.vinio.camera.databinding.FragmentVideoBinding
 
 class VideoFragment : Fragment() {
 
+//    Binding
     private var _binding: FragmentVideoBinding? = null
     private val binding: FragmentVideoBinding
         get() = (_binding
@@ -47,9 +50,16 @@ class VideoFragment : Fragment() {
         get() = (_cameraActionsBinding
             ?: RuntimeException("[EXCEPTION] FragmentPhotoBinding is null")) as CameraActionsBinding
 
+//    Camera vars
     private var videoCapture: VideoCapture<Recorder>? = null
     private var isBackCamera: Boolean = true
     private var recording: Recording? = null
+
+//    Timer
+    private var startTime: Long = 0
+    private var handler = Handler(Looper.getMainLooper())
+    private var runnable: Runnable? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -141,25 +151,23 @@ class VideoFragment : Fragment() {
                     is VideoRecordEvent.Start -> {
                         cameraActionsBinding.buttonTake.apply {
                             setBackgroundColor(ContextCompat.getColor(context, R.color.black))
-                            text = "не хоба"
+                            text = "Не хоба"
                             isEnabled = true
                         }
+                        startTimer()
                     }
 
                     is VideoRecordEvent.Finalize -> {
+                        handler.removeCallbacks(runnable!!)  // Останавливаем таймер
+                        binding.timerTextView.text = "00:00"
                         if (!recordEvent.hasError()) {
-                            val msg = "Video capture succeeded: " +
-                                    "${recordEvent.outputResults.outputUri}"
-                            Toast.makeText(context, msg, Toast.LENGTH_SHORT)
-                                .show()
+                            val msg = "Video capture succeeded: ${recordEvent.outputResults.outputUri}"
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             Log.d("CameraX", msg)
                         } else {
                             recording?.close()
                             recording = null
-                            Log.e(
-                                "CameraX", "Video capture ends with error: " +
-                                        "${recordEvent.error}"
-                            )
+                            Log.e("CameraX", "Video capture ends with error: ${recordEvent.error}")
                         }
                         cameraActionsBinding.buttonTake.apply {
                             setBackgroundColor(ContextCompat.getColor(context, R.color.main))
@@ -205,6 +213,27 @@ class VideoFragment : Fragment() {
 
         }, ContextCompat.getMainExecutor(requireContext()))
     }
+
+    private fun startTimer() {
+        startTime = System.currentTimeMillis()
+
+        runnable = object : Runnable {
+            override fun run() {
+                val elapsedTime = System.currentTimeMillis() - startTime
+                val seconds = (elapsedTime / 1000).toInt()
+                val minutes = seconds / 60
+                val secondsFormatted = seconds % 60
+
+                val timeText = String.format("%02d:%02d", minutes, secondsFormatted)
+                binding.timerTextView.text = timeText
+
+                handler.postDelayed(this, 1000)
+            }
+        }
+
+        handler.post(runnable!!)
+    }
+
 
     override fun onStart() {
         super.onStart()
