@@ -17,17 +17,15 @@ class GalleryAdapter(
         parent: ViewGroup,
         viewType: Int
     ): GalleryAdapter.GalleryViewHolder {
-        val binding = GalleryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = GalleryItemBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false)
         return GalleryViewHolder(binding)
     }
-
     override fun onBindViewHolder(holder: GalleryAdapter.GalleryViewHolder, position: Int) {
         val file = mediaFiles[position]
         holder.bind(file)
     }
-
     override fun getItemCount(): Int = mediaFiles.size
-
     inner class GalleryViewHolder(private val binding: GalleryItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(file: File) {
@@ -43,7 +41,6 @@ class GalleryAdapter(
             }
 
             binding.root.setOnClickListener {
-//                val file = mediaFiles[adapterPosition]
                 onMediaClick(file)
             }
         }

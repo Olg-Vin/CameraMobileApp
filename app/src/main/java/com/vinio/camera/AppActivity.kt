@@ -73,33 +73,23 @@ class AppActivity : AppCompatActivity() {
                 } else {
                     true
                 }
-
                 if (!cameraGranted) {
-                    Toast.makeText(
-                        this,
-                        "Нет доступа к камере. Завершаемся!",
+                    Toast.makeText(this, "Нет доступа к камере. Завершаемся!",
                         Toast.LENGTH_SHORT
                     ).show()
                     finish() // Завершаем приложение
                 } else if (!audioGranted) {
-                    Toast.makeText(
-                        this,
-                        "Немое кино..",
+                    Toast.makeText(this, "Немое кино..",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else if (!storageGranted) {
-                    Toast.makeText(
-                        this,
-                        "Нет доступа к хранилищу, нельзя сохранить фото",
+                    Toast.makeText(this, "Нет доступа к хранилищу, нельзя сохранить фото",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    Toast.makeText(
-                        this,
-                        "Все разрешения предоставлены",
+                    Toast.makeText(this, "Все разрешения предоставлены",
                         Toast.LENGTH_SHORT
                     ).show()
-                    // startCamera() // Например, запустить камеру
                 }
             }
         }

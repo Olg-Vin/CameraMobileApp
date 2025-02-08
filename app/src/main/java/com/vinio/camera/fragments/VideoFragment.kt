@@ -98,14 +98,6 @@ class VideoFragment : Fragment() {
             view.findNavController().navigate(R.id.action_video_to_photo)
         }
 
-        cameraNavigationBinding.buttonVideo.setOnClickListener {
-//            view.findNavController().navigate(R.id.action_photo_to_video)
-        }
-
-//        cameraActionsBinding.buttonGallery.setOnClickListener {
-//            // Ваш код для кнопки "Галерея"
-//        }
-
         cameraActionsBinding.buttonTake.setOnClickListener {
             captureVideo()
         }
@@ -125,14 +117,12 @@ class VideoFragment : Fragment() {
 
         val curRecording = recording
         if (curRecording != null) {
-            // Stop the current recording session.
             curRecording.stop()
             recording = null
             Log.d("CameraX", "Останова")
             return
         }
 
-        // create and start a new recording session
         val fileName = "Video_${System.currentTimeMillis()}.mp4"
         Log.d("CameraX", "Создание fileName: $fileName")
         val contentValues = ContentValues().apply {

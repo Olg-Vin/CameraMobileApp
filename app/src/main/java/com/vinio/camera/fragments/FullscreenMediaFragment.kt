@@ -35,7 +35,6 @@ class FullscreenMediaFragment : Fragment() {
 
         // Устанавливаем изображение или видео
         val uri = Uri.fromFile(mediaFile)
-
         Log.d("TAG", "${uri.lastPathSegment}")
         Log.d("TAG", "${uri.lastPathSegment?.startsWith("IMG")}")
 
@@ -50,9 +49,8 @@ class FullscreenMediaFragment : Fragment() {
             binding.fullscreenImageView.visibility = View.GONE
             binding.fullscreenVideoView.visibility = View.VISIBLE
 
-            // Устанавливаем видео и запускаем
+            // Устанавливаем видео
             binding.fullscreenVideoView.setVideoURI(uri)
-//            binding.fullscreenVideoView.start()
 
             // Кнопка паузы / воспроизведения
             binding.playPauseButton.setOnClickListener {
@@ -82,11 +80,10 @@ class FullscreenMediaFragment : Fragment() {
 
         // Обработчик для кнопки удаления
         binding.deleteButton.setOnClickListener {
-            // Удаляем файл
             if (mediaFile.exists()) {
                 mediaFile.delete()
                 Toast.makeText(context, "File deleted", Toast.LENGTH_SHORT).show()
-                parentFragmentManager.popBackStack() // Закрываем экран
+                parentFragmentManager.popBackStack()
             }
         }
     }

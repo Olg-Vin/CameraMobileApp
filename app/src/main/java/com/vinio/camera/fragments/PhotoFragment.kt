@@ -76,28 +76,16 @@ class PhotoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("CAMERA_APP", "Fragment photo onViewCreated")
-
-        cameraNavigationBinding.buttonPhoto.setOnClickListener {
-//            view.findNavController().navigate(R.id.action_video_to_photo)
-        }
-
         cameraNavigationBinding.buttonVideo.setOnClickListener {
             view.findNavController().navigate(R.id.action_photo_to_video)
         }
-
-//        cameraActionsBinding.galleryPreview.setOnClickListener {
-//            setupGalleryButton()
-//        }
-
         cameraActionsBinding.buttonTake.setOnClickListener {
             takePhoto()
         }
-
         cameraActionsBinding.buttonChange.setOnClickListener {
             isBackCamera = !isBackCamera
             startCamera()
         }
-
     }
 
     private fun takePhoto() {
@@ -110,19 +98,15 @@ class PhotoFragment : Fragment() {
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
             }
         }
-
-
         val outputOptions = ImageCapture.OutputFileOptions
             .Builder(requireContext().contentResolver,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 contentValues)
             .build()
-
-        // Сохраняем фото
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(requireContext()),

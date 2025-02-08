@@ -68,16 +68,13 @@ class GalleryFragment : Fragment() {
             }
         }
 
-        // Создаем адаптер после загрузки медиа файлов
         adapter = GalleryAdapter(
             mediaFiles,
             onMediaClick = { file ->
-                // Передаем выбранный файл в FullscreenMediaFragment через NavController
                 val bundle = Bundle().apply {
-                    putSerializable("media_file", file) // Передаем файл как Serializable
+                    putSerializable("media_file", file)
                 }
 
-                // Навигация с передачей данных
                 findNavController().navigate(R.id.action_gallery_to_fullScreen, bundle)
             }
         )
